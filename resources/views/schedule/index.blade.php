@@ -80,10 +80,10 @@
                                                             class="btn btn-blue btn-icon">
                                                             <i class="icon ti ti-zoom"></i>
                                                         </a>
-                                                        <a href="{{ route('transaction.show', ['id' => $row->id]) }}"
+                                                        <!-- <a href="{{ route('transaction.show', ['id' => $row->id]) }}"
                                                             class="btn btn-azure btn-icon">
                                                             <i class="icon ti ti-file-invoice"></i>
-                                                        </a>
+                                                        </a> -->
                                                         @if ($isClient && $row->status === TransactionStatus::ORDER_PAID)
                                                             <a href="{{ route('transaction.confirm', ['id' => $row->id]) }}"
                                                                 class="btn btn-green btn-icon">

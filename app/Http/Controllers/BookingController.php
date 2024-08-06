@@ -183,7 +183,42 @@ class BookingController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $data = $request->validate([
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after:start_date',
+        ]);
+
+        $start = Carbon::parse($data['start_date']);
+        $end = Carbon::parse($data['end_date']);
+
+        $isExist = Transaction::query()
+            ->where(function ($q) use ($start, $end) {
+                $q->orWhereBetween('start_date', [$start, $end])
+                    ->orWhereBetween('end_date', [$start, $end])
+                    ->orWhere('start_date', '=<', $start)
+                    ->orWhere('end_date', '>=', $end);
+            })
+            ->where('id', '!=', $id)
+            ->where('status', TransactionStatus::ORDER_PAID)
+            ->count();
+
+        if ($isExist > 0) {
+            return redirect()
+                ->back()
+                ->withErrors(['Error: Tanggal yang dipilih tidak tersedia']);
+        }
+
+        try {
+            Transaction::query()->where('id', $id)->update($data);
+        } catch (\Throwable $th) {
+            return redirect()
+                ->back()
+                ->withErrors(['Error: ' . $th->getMessage()]);
+        }
+
+        return redirect()
+            ->route('booking.show', $id)
+            ->with('success', 'Data berhasil diupdate');
     }
 
     /**

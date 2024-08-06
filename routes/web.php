@@ -51,6 +51,9 @@ Route::middleware('auth')->group(function () {
             Route::get('/{id}', [BookingController::class, 'create'])
                 ->name('create')
                 ->whereNumber('id');
+            Route::post('/edit/{id}', [BookingController::class, 'update'])
+                ->name('update')
+                ->whereNumber('id');
             Route::post('/{id}', [BookingController::class, 'store'])
                 ->name('store')
                 ->whereNumber('id');

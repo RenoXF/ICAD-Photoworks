@@ -30,6 +30,11 @@
                             Bayar
                         </a>
                     @endif
+                    @if ($isAdmin && $data->status === TransactionStatus::ORDER_PAID)
+                    <a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalEdit">
+                            Edit
+                        </a>
+                    @endif
                     @if ($isClient && $data->status === TransactionStatus::ORDER_PAID)
                     <a href="{{ route('transaction.confirm', ['id' => $data->id]) }}" class="btn btn-teal">
                         Selesaikan Pesanan
@@ -336,4 +341,63 @@
             </div>
         </div>
     </div>
+
+    <div class="modal modal-blur fade" id="modalEdit" tabindex="-1" style="display: none;"
+            aria-hidden="true">
+            <form action="{{ route('booking.update', ['id' => $data->id]) }}" method="post" enctype="multipart/form-data">
+                @csrf
+                <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Edit pesanan</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                                <div class="mb-3">
+                                    <h3>Tanggal Pelaksanaan</h3>
+                                    <div class="row">
+                                        <div class="col-12 col-md-4">
+                                            <input name="start_date" type="text" class="form-control "
+                                                id="datetimepicker-start" placeholder="Pilih tanggal mulai" required value="{{ $data->start_date->format('Y-m-d H:i:s') }}">
+                                        </div>
+                                        <div class="col-12 col-md-4">
+                                            <input name="end_date" type="text" class="form-control"
+                                                id="datetimepicker-end" placeholder="Pilih tanggal selesai" required  value="{{ $data->end_date->format('Y-m-d H:i:s') }}">
+                                        </div>
+                                    </div>
+                                </div>
+                        </div>
+                        <div class="modal-footer">
+                            <a href="#" class="btn btn-link link-danger" data-bs-dismiss="modal">
+                                Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary ms-auto">
+                                <i class="icon ti ti-send"></i>
+                                Ubah
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
 @endsection
+
+@push('js')
+    <script>
+        const initDateTimePicker = () => {
+            $('#datetimepicker-end').Zebra_DatePicker({
+                direction: 1,
+                format: 'Y-m-d H:i',
+            })
+            $('#datetimepicker-start').Zebra_DatePicker({
+                format: 'Y-m-d H:i',
+                // pair: $('#datetimepicker-end'),
+                direction: 1,
+            });
+        }
+        $(document).ready(initDateTimePicker);
+        $('.modal').on('show.bs.modal', initDateTimePicker)
+        $('.modal').on('shown.bs.modal', initDateTimePicker)
+    </script>
+@endpush
